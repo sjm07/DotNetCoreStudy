@@ -12,6 +12,8 @@ using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using ToolLibrary.Common;
 using log4net;
+using Microsoft.EntityFrameworkCore;
+using WebApi.Models;
 
 namespace WebApi
 {
@@ -21,7 +23,10 @@ namespace WebApi
         {
             Configuration = configuration;
             LogHelper.LoadLogger("WebApiRepository");
-            LogHelper.Log.Info("WebApi信息");
+            //LogHelper.Log.Info("WebApi信息");
+
+            var builder = new ConfigurationBuilder().AddJsonFile("d:/DotNetCoreStudy/WebApi/appsettings.json", false, true);
+            Configuration = builder.Build();
         }
 
         public IConfiguration Configuration { get; }
@@ -29,6 +34,12 @@ namespace WebApi
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
+            services.AddDbContext<TodoContext>(opt =>
+                opt.UseInMemoryDatabase("TodoList"));
+
+            //var s = Configuration["WebApi"];
+            //services.Configure<MyOptions>(Configuration);
+            services.Configure<Subsection>(Configuration.GetSection("Subsection"));
             services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_2);
         }
 
